@@ -40,8 +40,17 @@ func TestCreateForEKS(t *testing.T) {
 	o.AWSRegion = "dummy"
 	o.Config = &aws.Config{}
 	o.AppName = "myapp"
-	o.ECRClient = fakeecr.NewFakeECR()
+	fakeECR := fakeecr.NewFakeECR()
+	o.ECRClient = fakeECR
 
 	err := o.Run()
 	require.NoError(t, err, "failed to run")
+
+	// lets check we have a repository
+	require.Len(t, fakeECR.Repositories, 1, "should have created a repository")
+
+	for _, v := range fakeECR.Repositories {
+		require.NotNil(t, v.RepositoryUri, "should have a repository URI")
+		t.Logf("found ECR repository %s\n", *v.RepositoryUri)
+	}
 }
