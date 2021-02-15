@@ -2,11 +2,12 @@ package fakeecr
 
 import (
 	"context"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	"github.com/aws/aws-sdk-go-v2/service/ecr/types"
 	"github.com/aws/smithy-go/middleware"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // FakeECR a fake ECR implementation for testing

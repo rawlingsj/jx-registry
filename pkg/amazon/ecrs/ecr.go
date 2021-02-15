@@ -3,6 +3,8 @@ package ecrs
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	"github.com/aws/aws-sdk-go-v2/service/ecr/types"
@@ -13,7 +15,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sethvargo/go-envconfig"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 type ECRClient interface {

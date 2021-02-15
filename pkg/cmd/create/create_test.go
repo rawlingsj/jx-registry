@@ -1,12 +1,13 @@
 package create_test
 
 import (
+	"testing"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/jenkins-x-plugins/jx-registry/pkg/amazon/ecrs/fakeecr"
 	"github.com/jenkins-x-plugins/jx-registry/pkg/cmd/create"
 	jxcore "github.com/jenkins-x/jx-api/v4/pkg/apis/core/v4beta1"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 var (

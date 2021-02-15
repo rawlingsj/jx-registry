@@ -2,6 +2,8 @@ package create
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/jenkins-x-plugins/jx-registry/pkg/amazon/ecrs"
 	"github.com/jenkins-x-plugins/jx-registry/pkg/rootcmd"
 	jxcore "github.com/jenkins-x/jx-api/v4/pkg/apis/core/v4beta1"
@@ -18,7 +20,6 @@ import (
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 var (
