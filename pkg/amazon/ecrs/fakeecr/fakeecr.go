@@ -43,7 +43,7 @@ func (f *FakeECR) CreateRepository(ctx context.Context, params *ecr.CreateReposi
 	}
 
 	now := time.Now()
-	uri := "myawssession.dkr.ecr.myregion.amazonaws.com"
+	uri := "myawssession.dkr.ecr.myregion.amazonaws.com/" + name
 	id := uri
 	repo := &types.Repository{
 		CreatedAt:      &now,

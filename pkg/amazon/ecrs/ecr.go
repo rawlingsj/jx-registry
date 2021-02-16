@@ -58,7 +58,7 @@ func (o *Options) EnvProcess() {
 }
 
 // LazyCreateRegistry lazily creates the ECR registry if it does not already exist
-func (o *Options) LazyCreateRegistry() error {
+func (o *Options) LazyCreateRegistry(appName string) error {
 	ctx := o.GetContext()
 	cfg, err := o.GetConfig()
 	if err != nil {
@@ -69,7 +69,6 @@ func (o *Options) LazyCreateRegistry() error {
 	if region == "" {
 		return options.MissingOption("aws-region")
 	}
-	appName := o.AppName
 
 	// strip any tag/version from the app name
 	idx := strings.Index(appName, ":")

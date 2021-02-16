@@ -40,6 +40,7 @@ type Options struct {
 	options.BaseOptions
 	ecrs.Options
 
+	CacheSuffix   string `env:"CACHE_SUFFIX"`
 	ECRSuffix     string
 	Namespace     string
 	JXClient      versioned.Interface
@@ -67,6 +68,7 @@ func NewCmdCreate() (*cobra.Command, *Options) {
 
 	cmd.Flags().StringVarP(&o.Namespace, "namespace", "n", "", "The namespace. Defaults to the current namespace")
 	cmd.Flags().StringVarP(&o.ECRSuffix, "ecr-registry-suffix", "", ".amazonaws.com", "The registry suffix to check if we are using ECR")
+	cmd.Flags().StringVarP(&o.CacheSuffix, "cache-suffix", "", o.CacheSuffix, "If specified (or enabled via $CACHE_SUFFIX) we will make sure an ECR is created for the cache image too")
 
 	o.BaseOptions.AddBaseFlags(cmd)
 	return cmd, o
@@ -107,9 +109,16 @@ func (o *Options) Run() error {
 	}
 
 	log.Logger().Infof("verifying that container registry %s with organisation %s and app name %s has an ECR associated with it", info(registry), info(o.RegistryOrganisation), info(o.AppName))
-	err = o.Options.LazyCreateRegistry()
-	if err != nil {
-		return errors.Wrapf(err, "failed to lazy create the ECR registry")
+
+	images := []string{o.AppName}
+	if o.CacheSuffix != "" {
+		images = append(images, o.AppName+o.CacheSuffix)
+	}
+	for _, image := range images {
+		err = o.Options.LazyCreateRegistry(image)
+		if err != nil {
+			return errors.Wrapf(err, "failed to lazy create the ECR registry for %s", image)
+		}
 	}
 	return nil
 }

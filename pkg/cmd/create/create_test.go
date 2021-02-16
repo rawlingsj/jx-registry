@@ -42,12 +42,13 @@ func TestCreateForEKS(t *testing.T) {
 	o.AppName = "myapp"
 	fakeECR := fakeecr.NewFakeECR()
 	o.ECRClient = fakeECR
+	o.CacheSuffix = "/cache"
 
 	err := o.Run()
 	require.NoError(t, err, "failed to run")
 
 	// lets check we have a repository
-	require.Len(t, fakeECR.Repositories, 1, "should have created a repository")
+	require.Len(t, fakeECR.Repositories, 2, "should have created 2 repositories")
 
 	for _, v := range fakeECR.Repositories {
 		require.NotNil(t, v.RepositoryUri, "should have a repository URI")
