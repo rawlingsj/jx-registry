@@ -1,5 +1,7 @@
-FROM gcr.io/jenkinsxio/jx-cli-base:0.0.21
+FROM ghcr.io/jenkins-x/jx-boot:3.1.252
 
 ENTRYPOINT ["jx-registry"]
+
+CMD ["create"]
 
 COPY ./build/linux/jx-registry /usr/bin/jx-registry
