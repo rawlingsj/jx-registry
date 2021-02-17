@@ -64,6 +64,11 @@ func NewCmdCreate() (*cobra.Command, *Options) {
 		},
 	}
 
+	if o.Context == nil {
+		o.Context = cmd.Context()
+	}
+	o.Options.EnvProcess()
+
 	o.Options.AddFlags(cmd)
 
 	cmd.Flags().StringVarP(&o.Namespace, "namespace", "n", "", "The namespace. Defaults to the current namespace")
@@ -92,6 +97,13 @@ func (o *Options) Validate() error {
 	if o.Requirements == nil {
 		return errors.Errorf("no requirements found for dev environment")
 	}
+
+	if o.AWSRegion == "" {
+		o.AWSRegion = o.Requirements.Cluster.Region
+	}
+	if o.Registry == "" {
+		o.Registry = o.Requirements.Cluster.Registry
+	}
 	return nil
 
 }
@@ -101,10 +113,12 @@ func (o *Options) Run() error {
 		return errors.Wrapf(err, "failed to validate options")
 	}
 	if o.Requirements.Cluster.Provider != "eks" {
+		log.Logger().Infof("no ECR code necessary as using provider %s", o.Requirements.Cluster.Provider)
 		return nil
 	}
 	registry := o.Requirements.Cluster.Registry
-	if registry != "" && strings.HasSuffix(registry, o.ECRSuffix) {
+	if registry != "" && registry != "ecr.io" && !strings.HasSuffix(registry, o.ECRSuffix) {
+		log.Logger().Infof("ignoring registry %s ", registry)
 		return nil
 	}
 

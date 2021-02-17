@@ -21,16 +21,19 @@ type Options struct {
 
 func (o *Options) GetConfig() (*aws.Config, error) {
 	if o.Config != nil {
+		log.Logger().Infof("aready has AWS config")
 		return o.Config, nil
 	}
 	if o.Context == nil {
 		o.Context = context.TODO()
 	}
 
-	// TODO handle options....
-	cfg, err := config.LoadDefaultConfig(o.Context,
-		config.WithRegion("us-west-2"),
-	)
+	var ops []func(*config.LoadOptions) error
+	if o.AWSRegion != "" {
+		ops = append(ops, config.WithRegion(o.AWSRegion))
+	}
+	log.Logger().Infof("loading config with AWS region: '%s'", o.AWSRegion)
+	cfg, err := config.LoadDefaultConfig(o.Context, ops...)
 	o.Config = &cfg
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create AWS config")

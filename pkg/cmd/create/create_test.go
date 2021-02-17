@@ -43,6 +43,7 @@ func TestCreateForEKS(t *testing.T) {
 	fakeECR := fakeecr.NewFakeECR()
 	o.ECRClient = fakeECR
 	o.CacheSuffix = "/cache"
+	o.RegistryID = "123456789012"
 
 	err := o.Run()
 	require.NoError(t, err, "failed to run")

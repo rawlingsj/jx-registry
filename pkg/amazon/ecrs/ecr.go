@@ -24,6 +24,7 @@ type ECRClient interface {
 
 type Options struct {
 	amazon.Options
+	RegistryID           string `env:"REGISTRY_ID"`
 	Registry             string `env:"DOCKER_REGISTRY"`
 	RegistryOrganisation string `env:"DOCKER_REGISTRY_ORG"`
 	AppName              string `env:"APP_NAME"`
@@ -33,6 +34,7 @@ type Options struct {
 func (o *Options) AddFlags(cmd *cobra.Command) {
 	o.Options.AddFlags(cmd)
 
+	cmd.Flags().StringVarP(&o.RegistryID, "registry-id", "", o.RegistryID, "The registry ID to use. If not specified finds the first path of the registry. $REGISTRY_ID")
 	cmd.Flags().StringVarP(&o.Registry, "registry", "r", o.Registry, "The registry to use. Defaults to $DOCKER_REGISTRY")
 	cmd.Flags().StringVarP(&o.RegistryOrganisation, "organisation", "o", o.RegistryOrganisation, "The registry organisation to use. Defaults to $DOCKER_REGISTRY_ORG")
 	cmd.Flags().StringVarP(&o.AppName, "app", "a", o.AppName, "The app name to use. Defaults to $APP_NAME")
@@ -51,9 +53,14 @@ func (o *Options) Validate() error {
 
 // EnvProcess processes the environment variable defaults
 func (o *Options) EnvProcess() {
+	nilCfg := o.Config == nil
 	err := envconfig.Process(o.GetContext(), o)
 	if err != nil {
 		log.Logger().Warnf("failed to default env vars: %s", err.Error())
+	}
+	// lets avoid an empty config being created by the envconfig
+	if nilCfg {
+		o.Config = nil
 	}
 }
 
@@ -63,6 +70,21 @@ func (o *Options) LazyCreateRegistry(appName string) error {
 	cfg, err := o.GetConfig()
 	if err != nil {
 		return errors.Wrapf(err, "failed to create the AWS configuration")
+	}
+	if cfg == nil {
+		return errors.Errorf("no AWS configuration could be found")
+	}
+	if len(appName) <= 2 {
+		return errors.Errorf("missing valid app name: '%s'", appName)
+	}
+
+	if o.RegistryID == "" {
+		registry := o.Registry
+		if registry == "" {
+			return options.MissingOption("registry")
+		}
+		parts := strings.Split(registry, ".")
+		o.RegistryID = parts[0]
 	}
 
 	region := o.AWSRegion
@@ -83,17 +105,18 @@ func (o *Options) LazyCreateRegistry(appName string) error {
 	log.Logger().Infof("Let's ensure that we have an ECR repository for the image %s", termcolor.ColorInfo(repoName))
 
 	if o.ECRClient == nil {
-		o.ECRClient = ecr.NewFromConfig(*cfg, nil)
+		o.ECRClient = ecr.NewFromConfig(*cfg)
 	}
 	svc := o.ECRClient
 
 	repoInput := &ecr.DescribeRepositoriesInput{
+		RegistryId:      &o.RegistryID,
 		RepositoryNames: []string{repoName},
 	}
 	result, err := svc.DescribeRepositories(ctx, repoInput)
 	if err != nil {
 		if _, ok := err.(*types.RepositoryNotFoundException); !ok {
-			return errors.Wrapf(err, "failed to check for repository")
+			return errors.Wrapf(err, "failed to check for repository with registry ID %s", o.RegistryID)
 		}
 	}
 	if result != nil {
