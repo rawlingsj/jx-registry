@@ -101,6 +101,9 @@ func (o *Options) Validate() error {
 	if o.AWSRegion == "" {
 		o.AWSRegion = o.Requirements.Cluster.Region
 	}
+	if o.RegistryID == "" {
+		o.RegistryID = o.Requirements.Cluster.ProjectID
+	}
 	if o.Registry == "" {
 		o.Registry = o.Requirements.Cluster.Registry
 	}
