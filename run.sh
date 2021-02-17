@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh
 
 if [ -f ".jx/variables.sh" ]; then
   echo "sourcing .jx/variables.sh"
