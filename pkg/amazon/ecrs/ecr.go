@@ -78,15 +78,6 @@ func (o *Options) LazyCreateRegistry(appName string) error {
 		return errors.Errorf("missing valid app name: '%s'", appName)
 	}
 
-	if o.RegistryID == "" {
-		registry := o.Registry
-		if registry == "" {
-			return options.MissingOption("registry")
-		}
-		parts := strings.Split(registry, ".")
-		o.RegistryID = parts[0]
-	}
-
 	region := o.AWSRegion
 	if region == "" {
 		return options.MissingOption("aws-region")
@@ -110,12 +101,15 @@ func (o *Options) LazyCreateRegistry(appName string) error {
 	svc := o.ECRClient
 
 	repoInput := &ecr.DescribeRepositoriesInput{
-		RegistryId:      &o.RegistryID,
 		RepositoryNames: []string{repoName},
+	}
+	if o.RegistryID != "" {
+		repoInput.RegistryId = &o.RegistryID
 	}
 	result, err := svc.DescribeRepositories(ctx, repoInput)
 	if err != nil {
-		if _, ok := err.(*types.RepositoryNotFoundException); !ok {
+		var notFoundErr *types.RepositoryNotFoundException
+		if !errors.As(err, &notFoundErr) {
 			return errors.Wrapf(err, "failed to check for repository with registry ID %s", o.RegistryID)
 		}
 	}

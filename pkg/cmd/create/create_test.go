@@ -53,6 +53,13 @@ func TestCreateForEKS(t *testing.T) {
 
 	for _, v := range fakeECR.Repositories {
 		require.NotNil(t, v.RepositoryUri, "should have a repository URI")
-		t.Logf("found ECR repository %s\n", *v.RepositoryUri)
+		t.Logf("found ECR registry ID %s, Repository Name: %s ARN: %s URI: %s\n", ToString(v.RegistryId), ToString(v.RepositoryName), ToString(v.RepositoryArn), ToString(v.RepositoryUri))
 	}
+}
+
+func ToString(p *string) string {
+	if p == nil {
+		return ""
+	}
+	return *p
 }

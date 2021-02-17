@@ -12,6 +12,7 @@ import (
 
 // FakeECR a fake ECR implementation for testing
 type FakeECR struct {
+	Region       string
 	Repositories map[string]*types.Repository
 }
 
@@ -43,12 +44,17 @@ func (f *FakeECR) CreateRepository(ctx context.Context, params *ecr.CreateReposi
 	}
 
 	now := time.Now()
-	uri := "myawssession.dkr.ecr.myregion.amazonaws.com/" + name
-	id := uri
+
+	if f.Region == "" {
+		f.Region = "us-east-1"
+	}
+	id := "123456789012"
+	arn := "arn:aws:ecr:" + f.Region + ":" + id + ":repository/" + name
+	uri := id + ".dkr.ecr." + f.Region + ".amazonaws.com/" + name
 	repo := &types.Repository{
 		CreatedAt:      &now,
 		RegistryId:     &id,
-		RepositoryArn:  nil,
+		RepositoryArn:  &arn,
 		RepositoryName: &name,
 		RepositoryUri:  &uri,
 	}
