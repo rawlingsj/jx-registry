@@ -43,6 +43,8 @@ type Options struct {
 	CacheSuffix   string `env:"CACHE_SUFFIX"`
 	ECRSuffix     string
 	Namespace     string
+	Owner         string
+	Repository    string
 	JXClient      versioned.Interface
 	GitClient     gitclient.Interface
 	CommandRunner cmdrunner.CommandRunner
@@ -89,7 +91,7 @@ func (o *Options) Validate() error {
 		if err != nil {
 			return errors.Wrapf(err, "failed to create jxClient")
 		}
-		o.Requirements, err = variablefinders.FindRequirements(o.GitClient, o.JXClient, o.Namespace, "")
+		o.Requirements, err = variablefinders.FindRequirements(o.GitClient, o.JXClient, o.Namespace, "", o.Owner, o.Repository)
 		if err != nil {
 			return errors.Wrapf(err, "failed to load requirements from dev environment")
 		}
