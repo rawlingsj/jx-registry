@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jenkins-x-plugins/jx-gitops/pkg/variablefinders"
 	"github.com/jenkins-x-plugins/jx-registry/pkg/amazon/ecrs"
 	"github.com/jenkins-x-plugins/jx-registry/pkg/rootcmd"
 	jxcore "github.com/jenkins-x/jx-api/v4/pkg/apis/core/v4beta1"
 	"github.com/jenkins-x/jx-api/v4/pkg/client/clientset/versioned"
-	"github.com/jenkins-x/jx-gitops/pkg/variablefinders"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/helper"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cobras/templates"
