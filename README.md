@@ -11,7 +11,7 @@
 The main use case is initially to support lazy creation of AWS ECR registries on demand. Most other registries allow a registry to be created and used for different images.
 
 
-foo
+foo 3
 
 ## Getting Started
 
