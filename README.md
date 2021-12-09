@@ -11,6 +11,8 @@
 The main use case is initially to support lazy creation of AWS ECR registries on demand. Most other registries allow a registry to be created and used for different images.
 
 
+foo
+
 ## Getting Started
 
 Download the [jx-registry binary](https://github.com/jenkins-x-plugins/jx-registry/releases) for your operating system and add it to your `$PATH`.
